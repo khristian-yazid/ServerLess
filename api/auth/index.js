@@ -10,21 +10,21 @@ const isAuthenticated = (req, res, next) => {
     const { _id } = decoded;
     Users.findOne({ _id })
       .exec()
-      .then((users) => {
+      .then((user) => {
         req.user = user;
         next();
       });
   });
 };
 
-const hasRole = (req, res, next) => {
-  if (req.user.role === role) {
-    netx();
+const hasRoles = (roles) => (req, res, next) => {
+  if (roles.indexOf(req.user.role) > -1) {
+    return next();
   }
   res.sendStatus(403);
 };
 
 module.exports = {
   isAuthenticated,
-  hasRole,
+  hasRoles,
 };

@@ -2,7 +2,7 @@ const express = require("express");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const Users = require("../models/Users");
-const isAuthenticated = require("../auth/index");
+const { isAuthenticated } = require("../auth/index");
 
 const router = express.Router();
 
@@ -37,17 +37,17 @@ router.post("/register", (req, res) => {
 });
 
 router.post("/login", (req, res) => {
-  const { email, body } = req.body;
+  const { email, password } = req.body;
   Users.findOne({ email })
     .exec()
-    .then((users) => {
+    .then((user) => {
       if (!user) {
         return res.send("Usuario o contraseña incorrecta");
       }
-      crypto.pbkdf2(password, Newsalt, 10000, 64, "sha1", (err, key) => {
+      crypto.pbkdf2(password, user.salt, 10000, 64, "sha1", (err, key) => {
         const encryptedPassword = key.toString("base64");
         if (user.password === encryptedPassword) {
-          const token = signToken(user._id);
+          const token = singToken(user._id);
           return res.send({ token });
         }
         return res.send("usuario o contraseña incorrectos");
